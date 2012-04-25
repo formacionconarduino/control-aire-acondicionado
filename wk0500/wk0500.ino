@@ -36,7 +36,7 @@ TODO:
 //Defines
 #define VERSION "v0.1.3"
 #define DEBUG 1
-#define NUM_SLAVES 4
+#define NUM_SLAVES 3
 #define LEDY 60
 #define LEDR 61
 
@@ -168,10 +168,25 @@ void do_serve_web(EthernetClient client) {
   client.println("</title></head><body>");
   
   for (int i=0; i<NUM_SLAVES; i++) {
-    client.print("<p>");
-    for (int j=0; j<4; j++)
-      for (int k=0; k<2; k++)
-        imprime_html(client, i,j,k);
+    client.print("<p><h1><u>Esclavo ");
+    client.println(i);
+    client.print("</u></h1>");
+    for (int j=0; j<4; j++) {
+      client.print("<li>Rel&eacute; ");
+      client.print(j);
+      client.print(": <a href=\"cgi.cgi?s=");
+      client.print(i);
+      client.print("&r=");
+      client.print(j);
+      client.print("&v=1\"><img alt=\"On\" src=\"http://sindormir.net/~syvic/on-peq.jpg\"></a>");
+      client.print("<a href=\"cgi.cgi?s=");
+      client.print(i);
+      client.print("&r=");
+      client.print(j);
+      client.print("&v=0\"><img alt=\"Off\" src=\"http://sindormir.net/~syvic/off-peq.jpg\"></a>");
+      client.println("<br>");
+    }
+    client.print("</li>");
   }
   client.println("</body></html>");
 }
@@ -252,7 +267,7 @@ void barrido(void) {
 
 void imprime_html(EthernetClient client, byte s, byte r, byte v)
 {
-  client.println("<a href=\"cgi.cgi?s=");
+  client.print("<a href=\"cgi.cgi?s=");
   client.print(s);
   client.print("&r=");
   client.print(r);
@@ -266,6 +281,6 @@ void imprime_html(EthernetClient client, byte s, byte r, byte v)
   client.print(r);
   client.print(" V");
   client.print(v);
-  client.print("</a><br>");
+  client.println("</a><br>");
 }
 

@@ -156,37 +156,33 @@ void loop() {
       buffer_entrada[0]='\0';
     }
   }
-
 }
 
 void do_serve_web(EthernetClient client) {
-  client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: text/html");
+  client.println("HTTP/1.1 200 OK\nContent-Type: text/html");
   client.println();
   client.print("<html><head><title>Modbus webserver controller ");
   client.print(VERSION);
   client.println("</title></head><body>");
   
-  for (int i=0; i<NUM_SLAVES; i++) {
-    client.print("<p><h1><u>Esclavo ");
-    client.println(i);
-    client.print("</u></h1>");
-    for (int j=0; j<4; j++) {
+  for (byte i=0; i<NUM_SLAVES; i++) {
+    client.print("<p>\n<h1><u>Esclavo ");
+    client.print(i);
+    client.println("</u></h1><ul>");
+    for (byte j=0; j<4; j++) {
       client.print("<li>Rel&eacute; ");
       client.print(j);
       client.print(": <a href=\"cgi.cgi?s=");
       client.print(i);
       client.print("&r=");
       client.print(j);
-      client.print("&v=1\"><img alt=\"On\" src=\"http://sindormir.net/~syvic/on-peq.jpg\"></a>");
-      client.print("<a href=\"cgi.cgi?s=");
+      client.print("&v=1\"><img alt=\"On\" src=\"http://sindormir.net/~syvic/on-peq.jpg\"></a> <a href=\"cgi.cgi?s=");
       client.print(i);
       client.print("&r=");
       client.print(j);
-      client.print("&v=0\"><img alt=\"Off\" src=\"http://sindormir.net/~syvic/off-peq.jpg\"></a>");
-      client.println("<br>");
+      client.println("&v=0\"><img alt=\"Off\" src=\"http://sindormir.net/~syvic/off-peq.jpg\"></a></li>");
     }
-    client.print("</li>");
+    client.print("</ul>");
   }
   client.println("</body></html>");
 }
@@ -248,7 +244,7 @@ void Write485(byte slave, unsigned int relay, unsigned int value) {
   if (DEBUG) Serial.println(slave, DEC);
   if (DEBUG) Serial.println(relay, DEC);
   if (DEBUG) Serial.println(value, DEC);
-  if (slave==4)
+  if (slave==4) //Pequeño workaround para hablar con el termostato en su direccion original
     termostato.writeSingleRegister(relay,value);
   else
     slaves[slave].writeSingleRegister(relay,value);
@@ -263,24 +259,5 @@ void barrido(void) {
         Write485(i,j,k);
         delay(300);
       }
-}
-
-void imprime_html(EthernetClient client, byte s, byte r, byte v)
-{
-  client.print("<a href=\"cgi.cgi?s=");
-  client.print(s);
-  client.print("&r=");
-  client.print(r);
-  client.print("&v=");
-  client.print(v);
-  client.print("\">");
-
-  client.print(" S");
-  client.print(s);
-  client.print(" R");
-  client.print(r);
-  client.print(" V");
-  client.print(v);
-  client.println("</a><br>");
 }
 
